@@ -7,7 +7,7 @@ The source code of the solution algorithms to solve the TLB. Inside the director
 
 ## tlb_generator
 
-A generator of instances for the data of [Datner et al., (2017)](https://pubsonline.informs.org/doi/abs/10.1287/trsc.2017.0790). Inside the directory, you will find scripts that build the code and execute the code to generate the instances.
+A generator of instances for the data of [Datner et al., (2017)](https://pubsonline.informs.org/doi/abs/10.1287/trsc.2017.0790). Inside the directory, you will find scripts that build the code and call the executable to generate the instances.
 
 ## tlb_generator_slr
 
