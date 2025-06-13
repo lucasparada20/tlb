@@ -11,5 +11,5 @@ A generator of instances for the data of [Datner et al., (2017)](https://pubsonl
 
 ## tlb_generator_slr
 
-A generator of instances for the data of [Technical Report](https://www.cirrelt.ca/documentstravail/cirrelt-2025-02.pdf). Inside the directory, you will find a Makefile to build the code.
+A generator of instances for the data of [Technical Report](https://www.cirrelt.ca/documentstravail/cirrelt-2025-02.pdf). Inside the directory, you will find a Makefile to build the code and a script to call the executable and generate the instances.
 
