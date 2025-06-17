@@ -7,14 +7,7 @@ The data is taken from the work of [Datner et al., (2017)](https://pubsonline.in
 
 ## Building the code in Linux
 
-1. Clone the repository and add executable permission to a script that will compile and link for you:
-
-```shell
-git clone https://github.com/lucasparada20/tlb_generator.git
-cd tlb_generator
-chmod u+x build_datner_gen.sh
-```
-2. Build the code by typing:
+1. Build the code by typing:
 
 ```bash
 ./build_datner_gen.sh
