@@ -404,7 +404,7 @@ void McfpSolvers::MakeLemonGraph(ScenarioGraph * UserGraph, ListDigraph & LemonG
 			if (graph_type == Recourse || graph_type == OptStatCapRecourse) {
 				capacities[lemonArc] = 0;
 	} else if (graph_type == WSnoCap || (graph_type == TargetBounds || graph_type == GlobalTargetLbUb) && (Parameters::GetModel() == 6 || Parameters::GetModel() == 7)) {
-				capacities[lemonArc] = prob->GetNode(i)->stationcapacity + (int)Parameters::GetBudget();
+				capacities[lemonArc] = prob->GetNode(i)->stationcapacity + (int)std::ceil( Parameters::GetBudget() * prob->GetCapTot() );
 				//capacities[lemonArc] = 9999;
 			} else {
 				capacities[lemonArc] = prob->GetNode(i)->stationcapacity;
@@ -474,8 +474,8 @@ void McfpSolvers::MakeLemonGraph(ScenarioGraph * UserGraph, ListDigraph & LemonG
 				((graph_type == TargetBounds || graph_type == GlobalTargetLbUb) && 
 				 (Parameters::GetModel() == 6 || Parameters::GetModel() == 7))) 
 				 {
-					prob->GetNode(i)->stationcapacity + (int)Parameters::GetBudget();
-					 //capacities[lemonArc] = 9999;
+					capacities[lemonArc] = arc->cap + (int)std::ceil( Parameters::GetBudget() * prob->GetCapTot() );
+					//capacities[lemonArc] = 9999;
 				 } else {
 					capacities[lemonArc] = arc->cap;
 				}
