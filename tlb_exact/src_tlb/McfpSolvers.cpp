@@ -474,7 +474,8 @@ void McfpSolvers::MakeLemonGraph(ScenarioGraph * UserGraph, ListDigraph & LemonG
 				((graph_type == TargetBounds || graph_type == GlobalTargetLbUb) && 
 				 (Parameters::GetModel() == 6 || Parameters::GetModel() == 7))) 
 				 {
-					capacities[lemonArc] = 9999;
+					prob->GetNode(i)->stationcapacity + (int)Parameters::GetBudget();
+					 //capacities[lemonArc] = 9999;
 				 } else {
 					capacities[lemonArc] = arc->cap;
 				}
