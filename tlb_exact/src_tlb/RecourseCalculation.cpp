@@ -101,6 +101,7 @@ double RecourseCalculation::Calculate(std::vector<int> & targets, const std::vec
 		McfpSolvers solver;
 		if(calculate_target_levels)
 			solver.calculate_target_levels = true;
+			
 		
 		if(!hm.size() && !hp.size())
 			RecCost += solver.Solve(graphObjects[e], true, false, graph_type,-1,-1,targets);
@@ -185,7 +186,7 @@ double RecourseCalculation::Calculate(std::vector<int> & targets, std::vector<do
 			solver.y0[i] = y0[i];
 
 		if (hm.size() || hp.size()) {
-			graph_type = OptStatCapRecourse; // You need to set it here because at the end of Cplex, the recourse needs to be computed with this graph_type
+			graph_type = OptStatCapRecourse;
 			RecCost += solver.Solve(graphObjects[e], false, true, graph_type, -1, -1, targets, hm, hp);
 		} else {
 			//By default: graph_type == SingleSourceRecourse
@@ -556,29 +557,54 @@ void RecourseCalculation::CalculateTargetBounds()
 	printf("%s\n",Parameters::GetSolverName());
 	for (int i = 0; i < prob->GetNodeCount(); i++)
 	{
-		for(int e = 0; e < scs->GetScenarioCount(); e++)
+		for (int e = 0; e < scs->GetScenarioCount(); e++)
 		{
-			printf("i:%d cap:%d e:%d Lb:%d Ub:%d LbSatTrips:%d UbSatTrips:%d\n",i,prob->GetNode(i)->stationcapacity,e,scs->GetTargetLb(e,i),scs->GetTargetUb(e,i),LbM[e][i],UbM[e][i]);
-			if ((Parameters::GetModel() == 2 && scs->GetTargetUb(e, i) > prob->GetNode(i)->stationcapacity) || 
-				(Parameters::GetModel() == 6 && scs->GetTargetUb(e, i) > 9999) || 
-				scs->GetTargetLb(e, i) < 0) 
+			printf("i:%d cap:%d e:%d Lb:%d Ub:%d LbSatTrips:%d UbSatTrips:%d cap+B:%d\n",
+				i,
+				prob->GetNode(i)->stationcapacity,
+				e,
+				scs->GetTargetLb(e,i),
+				scs->GetTargetUb(e,i),
+				LbM[e][i],
+				UbM[e][i],
+				prob->GetNode(i)->stationcapacity + (int)std::ceil(Parameters::GetBudget() * prob->GetCapTot())
+			);
+
+			if (
+				(Parameters::GetModel() == 2 && ( scs->GetTargetUb(e, i) > prob->GetNode(i)->stationcapacity || scs->GetTargetLb(e, i) < 0 ) )
+				||
+				(Parameters::GetModel() == 6 &&
+					(
+						scs->GetTargetUb(e, i) > prob->GetNode(i)->stationcapacity + (int)std::ceil(Parameters::GetBudget() * prob->GetCapTot())
+						||
+						scs->GetTargetLb(e, i) < 0
+					)
+				)
+			)
 			{
-				printf("Wrong target bound, exiting ...\n"); 
+				printf("Wrong target bound, exiting ...\n");
 				exit(1);
 			}
-			if(LbM[e][i]!=UbM[e][i] && LbM[e][i] != -1 && UbM[e][i] != -1)
+
+			if (LbM[e][i] != UbM[e][i] && LbM[e][i] != -1 && UbM[e][i] != -1)
 			{
-				printf("Wrong NbSatisfiedTrips in Lb, Ub graphs, exiting ...\n"); exit(1);
+				printf("Wrong NbSatisfiedTrips in Lb, Ub graphs, exiting ...\n");
+				exit(1);
 			}
-			//REMEBER TO RMV THIS!
-			//if(scs->GetTargetLb(e,i)>scs->GetTargetUb(e,i))
-			//{
-				//printf("Found Lb > Ub. Exiting ...\n"); exit(1);
-			//}
+
+			// Uncomment for debug only
+			/*
+			if (scs->GetTargetLb(e,i) > scs->GetTargetUb(e,i))
+			{
+				printf("Found Lb > Ub. Exiting ...\n");
+				exit(1);
+			}
+			*/
 		}
-			
+
 		printf("\n");
-	}	
+	}
+
 }
 
 void RecourseCalculation::CalculateMinMaxBounds()
@@ -676,7 +702,7 @@ void RecourseCalculation::Calculate(int bound_type, std::vector<std::vector<int>
             int max_e = -1;
             int min_e = -1;
             int opt_e = false;
-            int min_lb = Parameters::GetModel() == 7 ? 10000 : prob->GetNode(i)->stationcapacity + 1; //M7 has unlimited capacity of 9999
+            int min_lb = Parameters::GetModel() == 7 ? prob->GetNode(i)->stationcapacity + (int)std::ceil( Parameters::GetBudget() * prob->GetCapTot() ) : prob->GetNode(i)->stationcapacity + 1; //M7 has unlimited capacity of h_i + B
             int max_ub = -1;
 
             for (int e = 0; e < scs->GetScenarioCount(); e++)
@@ -706,7 +732,7 @@ void RecourseCalculation::Calculate(int bound_type, std::vector<std::vector<int>
 			else printf("\nBnd:%s Stat:%d Cap:%d value:%d Opt! Skipping the mcfp due to scenario:%d\n",(bound_type == STATION_LOWER_BOUND)?"Lb":"Ub",i,prob->GetNode(i)->stationcapacity,(bound_type == STATION_LOWER_BOUND)? min_lb : max_ub,(bound_type == 1)?min_e:max_e);*/
 
             if (opt_e || (bound_type == STATION_LOWER_BOUND && min_lb == 0) ||
-                          (bound_type == STATION_UPPER_BOUND && max_ub == prob->GetNode(i)->stationcapacity && Parameters::GetModel() == 3|| bound_type == STATION_UPPER_BOUND && max_ub == 9999 && Parameters::GetModel() == 7))
+                          (bound_type == STATION_UPPER_BOUND && max_ub == prob->GetNode(i)->stationcapacity && Parameters::GetModel() == 3|| bound_type == STATION_UPPER_BOUND && max_ub == prob->GetNode(i)->stationcapacity) + (int)std::ceil( Parameters::GetBudget() * prob->GetCapTot() ) && Parameters::GetModel() == 7)
             {
                 max_or_min[i] = (bound_type == STATION_LOWER_BOUND) ? min_lb : max_ub;
                 break;
@@ -857,31 +883,4 @@ std::vector<double> RecourseCalculation::CalculateLb(std::vector<int> & targets)
 	lbs[2] = avg_rejected_drops;
 	
 	return lbs;
-}
-
-double RecourseCalculation::CalculateAverageTripsPerStationScenario()
-{
-	double avg = 0.0;
-	std::vector<int> stations(prob->GetNodeCount(),0);
-	for(int e=0;e<scs->GetScenarioCount();e++)
-	{
-		for(int i=graphObjects[e]->GetNetworkArcCount();i<graphObjects[e]->GetArcCount();i++)
-		{
-			MCF_arc * arc = graphObjects[e]->GetArc(i);
-			if(arc->type != 3) 
-			{
-				arc->Show(); printf("In recourse object : Not a trip arc ... scenario:%d\n",e); exit(1);
-			}
-
-			stations[ arc->from_cust_no ]++;
-		}
-	}
-	
-	for(int i=0;i<prob->GetNodeCount();i++)
-	{
-		stations[i] /= scs->GetScenarioCount();
-		avg += stations[i];
-	}
-	
-	return avg / (double)stations.size();
 }
