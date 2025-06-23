@@ -9,4 +9,8 @@ The source code of the solution algorithms to solve the TLB. Inside the director
 
 A generator of instances for the data of [Datner et al., (2017)](https://pubsonline.informs.org/doi/abs/10.1287/trsc.2017.0790). Inside the directory, you will find scripts that build the code and call the executable to generate the instances.
 
+## Codebase for the BRP
+
+The codebase for the BRP can be found in the following [repo](https://github.com/lucasparada20/brp_heur).
+
 
