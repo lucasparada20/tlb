@@ -1,9 +1,9 @@
-# TLB
-The parent directory of the Target Level Problem (TLB) codebase for solution algorithms and generators of instances
+# TLP
+The parent directory of the Target-Level Problem (TLP) codebase for solution algorithms and generators of instances
 
 ## tlb_exact
 
-The source code of the solution algorithms to solve the TLB. Inside the directory, you will find scripts to build the code, to launch jobs in high-performance computing clusters, and to execute the code on a local machine.
+The source code of the solution algorithms to solve the TLP. Inside the directory, you will find scripts to build the code, to launch jobs in high-performance computing clusters, and to execute the code on a local machine.
 
 ## tlb_generator
 
