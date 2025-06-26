@@ -557,54 +557,29 @@ void RecourseCalculation::CalculateTargetBounds()
 	printf("%s\n",Parameters::GetSolverName());
 	for (int i = 0; i < prob->GetNodeCount(); i++)
 	{
-		for (int e = 0; e < scs->GetScenarioCount(); e++)
+		for(int e = 0; e < scs->GetScenarioCount(); e++)
 		{
-			printf("i:%d cap:%d e:%d Lb:%d Ub:%d LbSatTrips:%d UbSatTrips:%d cap+B:%d\n",
-				i,
-				prob->GetNode(i)->stationcapacity,
-				e,
-				scs->GetTargetLb(e,i),
-				scs->GetTargetUb(e,i),
-				LbM[e][i],
-				UbM[e][i],
-				prob->GetNode(i)->stationcapacity + (int)std::ceil(Parameters::GetBudget() * prob->GetCapTot())
-			);
-
-			if (
-				(Parameters::GetModel() == 2 && ( scs->GetTargetUb(e, i) > prob->GetNode(i)->stationcapacity || scs->GetTargetLb(e, i) < 0 ) )
-				||
-				(Parameters::GetModel() == 6 &&
-					(
-						scs->GetTargetUb(e, i) > prob->GetNode(i)->stationcapacity + (int)std::ceil(Parameters::GetBudget() * prob->GetCapTot())
-						||
-						scs->GetTargetLb(e, i) < 0
-					)
-				)
-			)
+			printf("i:%d cap:%d e:%d Lb:%d Ub:%d LbSatTrips:%d UbSatTrips:%d\n",i,prob->GetNode(i)->stationcapacity,e,scs->GetTargetLb(e,i),scs->GetTargetUb(e,i),LbM[e][i],UbM[e][i]);
+			if ((Parameters::GetModel() == 2 && scs->GetTargetUb(e, i) > prob->GetNode(i)->stationcapacity) || 
+				(Parameters::GetModel() == 6 && scs->GetTargetUb(e, i) > prob->GetNode(i)->stationcapacity) + (int)std::ceil( Parameters::GetBudget() * prob->GetCapTot() ) || 
+				scs->GetTargetLb(e, i) < 0) // Remember to change to : prob->GetNode(i)->stationcapacity) + (int)std::ceil( Parameters::GetBudget() * pr->GetCapTot() )
 			{
-				printf("Wrong target bound, exiting ...\n");
+				printf("Wrong target bound, exiting ...\n"); 
 				exit(1);
 			}
-
-			if (LbM[e][i] != UbM[e][i] && LbM[e][i] != -1 && UbM[e][i] != -1)
+			if(LbM[e][i]!=UbM[e][i] && LbM[e][i] != -1 && UbM[e][i] != -1)
 			{
-				printf("Wrong NbSatisfiedTrips in Lb, Ub graphs, exiting ...\n");
-				exit(1);
+				printf("Wrong NbSatisfiedTrips in Lb, Ub graphs, exiting ...\n"); exit(1);
 			}
-
-			// Uncomment for debug only
-			/*
-			if (scs->GetTargetLb(e,i) > scs->GetTargetUb(e,i))
-			{
-				printf("Found Lb > Ub. Exiting ...\n");
-				exit(1);
-			}
-			*/
+			//REMEBER TO RMV THIS!
+			//if(scs->GetTargetLb(e,i)>scs->GetTargetUb(e,i))
+			//{
+				//printf("Found Lb > Ub. Exiting ...\n"); exit(1);
+			//}
 		}
-
+			
 		printf("\n");
-	}
-
+	}	
 }
 
 void RecourseCalculation::CalculateMinMaxBounds()
