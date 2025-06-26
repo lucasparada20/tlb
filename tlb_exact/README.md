@@ -27,7 +27,7 @@ The TLB uses `OpenMP` which is enabled by default in the compiler.
 
 ## Instances
 
-The instances can be found in this [Google drive link](https://drive.google.com/file/d/1Q-0E389K-WTVqK05zVU2rITzFuYCQLoM/view?usp=sharing). These instances are very large-sized and they also include the string of the real-life station ID from which the data was obtained (in the working version of the code, the ID is not used, but in future versions, one could match to input current bicycle quantities). Smaller instances can be found in my other repo for the [TLB generator](https://github.com/lucasparada20/tlb_generator). The solutions to these smaller instances are in the directory `targets_datner`.
+The instances can be found in this [Google drive link](https://drive.google.com/file/d/1Q-0E389K-WTVqK05zVU2rITzFuYCQLoM/view?usp=sharing). These instances are very large-sized and they also include the string of the real-life station ID from which the data was obtained (in the working version of the code, the ID is not used, but in future versions, one could match to input current bicycle quantities). Smaller instances can be found in my other repo for the [TLP generator](https://github.com/lucasparada20/tlb_generator). The solutions to these smaller instances are in the directory `targets_datner`.
 
 ## Calling the executable
 
